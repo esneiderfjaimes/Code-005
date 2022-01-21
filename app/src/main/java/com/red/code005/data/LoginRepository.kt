@@ -1,46 +1,22 @@
 package com.red.code005.data
 
-import com.red.code005.data.model.LoggedInUser
+import android.content.Context
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.GoogleAuthProvider
+import com.red.code005.R
 
-/**
- * Class that requests authentication and user information from the remote data source and
- * maintains an in-memory cache of login status and user credentials information.
- */
+class LoginRepository(private val auth: FirebaseAuth = FirebaseAuth.getInstance()) {
 
-class LoginRepository(val dataSource: LoginDataSource) {
+    fun authWithGoogleIntent(context: Context) = GoogleSignIn.getClient(
+        context, GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+            .requestIdToken(context.getString(R.string.web_client_id))
+            .requestEmail()
+            .build()
+    ).signInIntent
 
-    // in-memory cache of the loggedInUser object
-    var user: LoggedInUser? = null
-        private set
-
-    val isLoggedIn: Boolean
-        get() = user != null
-
-    init {
-        // If user credentials will be cached in local storage, it is recommended it be encrypted
-        // @see https://developer.android.com/training/articles/keystore
-        user = null
-    }
-
-    fun logout() {
-        user = null
-        dataSource.logout()
-    }
-
-    fun login(username: String, password: String): Result<LoggedInUser> {
-        // handle login
-        val result = dataSource.login(username, password)
-
-        if (result is Result.Success) {
-            setLoggedInUser(result.data)
-        }
-
-        return result
-    }
-
-    private fun setLoggedInUser(loggedInUser: LoggedInUser) {
-        this.user = loggedInUser
-        // If user credentials will be cached in local storage, it is recommended it be encrypted
-        // @see https://developer.android.com/training/articles/keystore
-    }
+    fun authWithGoogle(idToken: String) = auth.signInWithCredential(
+        GoogleAuthProvider.getCredential(idToken, null)
+    )
 }

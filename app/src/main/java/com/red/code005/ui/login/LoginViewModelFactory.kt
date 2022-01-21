@@ -1,23 +1,24 @@
 package com.red.code005.ui.login
 
+import android.content.Intent
+import androidx.activity.result.ActivityResultLauncher
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.red.code005.data.LoginDataSource
 import com.red.code005.data.LoginRepository
 
 /**
  * ViewModel provider factory to instantiate LoginViewModel.
  * Required given LoginViewModel has a non-empty constructor
  */
-class LoginViewModelFactory : ViewModelProvider.Factory {
+class LoginViewModelFactory(private val result: ActivityResultLauncher<Intent>) :
+    ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(LoginViewModel::class.java)) {
             return LoginViewModel(
-                loginRepository = LoginRepository(
-                    dataSource = LoginDataSource()
-                )
+                result = result,
+                loginRepository = LoginRepository()
             ) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")

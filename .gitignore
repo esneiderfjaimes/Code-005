@@ -100,3 +100,4 @@ lint/tmp/
 .idea/
 app/src/test/
 app/src/androidTest/
+app/google-services.json
