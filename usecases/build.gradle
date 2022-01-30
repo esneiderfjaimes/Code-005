@@ -1,0 +1,22 @@
+plugins {
+    id 'com.android.library'
+    id 'org.jetbrains.kotlin.android'
+    id 'kotlin-kapt'
+    id 'dagger.hilt.android.plugin'
+}
+
+dependencies {
+    // Project
+    implementation project(":data")
+    implementation project(":domain")
+    // Kotlin Core
+    implementation kotlinLib
+    // Dagger
+    implementation daggerLib
+    kapt daggerCompilerLib
+}
+
+android {
+    compileSdk 31
+}
+

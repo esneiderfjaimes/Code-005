@@ -7,11 +7,8 @@ import android.os.Bundle
 import android.util.Log
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.lifecycleScope
-import androidx.navigation.Navigation
-import com.red.code005.R
+import com.red.code005.navigateTo
 
 private val PERMISSIONS_REQUIRED = arrayOf(
     Manifest.permission.CAMERA,
@@ -34,7 +31,7 @@ class PermissionsFragment : Fragment() {
                 "PermissionsLogs",
                 "onCreate: nice! go to login"
             )
-            navigateToLogin()
+            navigateTo(PermissionsFragmentDirections.actionPermissionsToLogin())
             return
         }
 
@@ -51,24 +48,20 @@ class PermissionsFragment : Fragment() {
                     return@forEach
                 }
             }
-            if (result) navigateToLogin()
+            if (result) navigateTo(PermissionsFragmentDirections.actionPermissionsToLogin())
             // TODO: what to show when denying permissions?
             else activity?.finish()
         }.launch(PERMISSIONS_REQUIRED)
-    }
-
-    private fun navigateToLogin() {
-        lifecycleScope.launchWhenStarted {
-            Navigation.findNavController(requireActivity(), R.id.fragment_container)
-                .navigate(PermissionsFragmentDirections.actionPermissionsToLogin())
-        }
     }
 
     companion object {
         /**
          * Convenience method used to check if all permissions required by this app are granted
          */
-        fun hasPermissions(context: Context, vararg permissions: String = PERMISSIONS_REQUIRED): Boolean = permissions.all {
+        fun hasPermissions(
+            context: Context,
+            vararg permissions: String = PERMISSIONS_REQUIRED
+        ): Boolean = permissions.all {
             ActivityCompat.checkSelfPermission(context, it) == PackageManager.PERMISSION_GRANTED
         }
     }

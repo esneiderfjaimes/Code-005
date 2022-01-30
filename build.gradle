@@ -1,7 +1,35 @@
+ext{
+    // region Versions
+
+    // Android X versions
+    kotlinVersion = '1.7.0'
+    livecycleVersion = '2.4.0'
+    navVersion = '2.4.0'
+    // Google version
+    materialVersion = '1.6.0-alpha02'
+    hiltVersion = '2.40.5'
+    // Other dependencies
+    glideVersion = '4.12.0'
+
+    // endregion
+    // region Libs Android X
+
+    // > Core
+    kotlinLib = "androidx.core:core-ktx:$kotlinVersion"
+
+    // endregion
+    // region Google Libs
+
+    // > Dagger Hilt
+    daggerLib = "com.google.dagger:hilt-android:$hiltVersion"
+    daggerCompilerLib = "com.google.dagger:hilt-android-compiler:$hiltVersion"
+
+    // endregion
+}
 buildscript {
     ext {
         livecycleVersion = '2.4.0'
-        navVersion = '2.3.5'
+        navVersion = '2.4.0'
         materialVersion = '1.6.0-alpha02'
     }
     repositories {
@@ -9,10 +37,12 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath "com.android.tools.build:gradle:7.0.4"
+        classpath 'com.android.tools.build:gradle:7.1.0'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.6.10"
         // Navigation
-        classpath "androidx.navigation:navigation-safe-args-gradle-plugin:$navVersion"
+        classpath "androidx.navigation:navigation-safe-args-gradle-plugin:2.5.0-alpha01"
+        // Dagger Hilt
+        classpath 'com.google.dagger:hilt-android-gradle-plugin:2.40.5'
         // Google Services plugin
         classpath 'com.google.gms:google-services:4.3.10'
     }

@@ -11,4 +11,10 @@
     <string name="login_failed">"Login failed"</string>
     <string name="sign_in_with_google">Sign in with Google</string>
     <string name="sign_out">Sign Out</string>
+    <string name="widgets">Widgets</string>
+    <string name="relations">Relations</string>
+    <string name="camera">Camera</string>
+    <string name="account">Account</string>
+    <string name="back">back</string>
+    <string name="photo_user">photo user</string>
 </resources>

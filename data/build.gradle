@@ -1,0 +1,30 @@
+plugins {
+    id 'com.android.library'
+    id 'kotlin-android'
+    id 'org.jetbrains.kotlin.android'
+    id 'kotlin-kapt'
+    id 'dagger.hilt.android.plugin'
+    id 'com.google.gms.google-services'
+}
+
+dependencies {
+    // Project
+    implementation project(":domain")
+    // Kotlin Core
+    implementation kotlinLib
+    // Dagger
+    implementation daggerLib
+    kapt daggerCompilerLib
+
+    // > Play Services
+    implementation 'com.google.android.gms:play-services-auth:20.0.1'
+    // > Firebase
+    implementation platform('com.google.firebase:firebase-bom:29.0.0')
+    implementation 'com.google.firebase:firebase-analytics-ktx'
+    implementation 'com.google.firebase:firebase-auth-ktx'
+    implementation 'com.google.firebase:firebase-firestore-ktx'
+}
+
+android {
+    compileSdk 31
+}

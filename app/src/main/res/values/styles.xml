@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="ShapeAppearance.App.SmallComponent.R25" parent="ShapeAppearance.Material3.SmallComponent">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">0dp</item>
+    </style>
+
+    <style name="Button.Match" parent="Widget.Material3.Button.ElevatedButton">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_alignParentBottom">true</item>
+        <item name="android:layout_centerHorizontal">true</item>
+        <item name="android:layout_margin">@dimen/fragment_vertical_margin</item>
+        <item name="android:padding">@dimen/fragment_vertical_margin</item>
+        <item name="shapeAppearance">@style/ShapeAppearance.App.SmallComponent.R25</item>
+        <item name="shapeAppearanceSmallComponent">@style/ShapeAppearance.App.SmallComponent.R25</item>
+    </style>
+</resources>

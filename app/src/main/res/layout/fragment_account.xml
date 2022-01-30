@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="accountViewModel"
+            type="com.red.code005.ui.account.AccountViewModel" />
+    </data>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="?attr/colorSurface"
+        tools:context=".ui.account.AccountFragment">
+
+        <com.google.android.material.appbar.AppBarLayout
+            android:id="@+id/appBarLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <com.google.android.material.appbar.MaterialToolbar
+                android:id="@+id/topBar"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                app:navigationIcon="@drawable/ic_back"
+                app:title="@string/account" />
+        </com.google.android.material.appbar.AppBarLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/appBarLayout"
+            android:layout_marginTop="@dimen/fragment_vertical_margin"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <ImageView
+                android:layout_width="94dp"
+                android:layout_height="94dp"
+                android:contentDescription="@string/photo_user"
+                android:src="@drawable/ic_account"
+                app:photoUrl='@{accountViewModel.user != null ? accountViewModel.user.photoUrl.toString() : ""}' />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="@{accountViewModel.user.name}"
+                android:textAppearance="@style/TextAppearance.Material3.TitleLarge"
+                tools:text="Esneider" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@{accountViewModel.user.email}"
+                tools:text="esneider@red.com" />
+        </LinearLayout>
+
+        <Button
+            style="@style/Button.Match"
+            android:onClick="@{() -> accountViewModel.signOut()}"
+            android:text="@string/sign_out" />
+    </RelativeLayout>
+</layout>
