@@ -20,7 +20,7 @@ import com.bumptech.glide.request.transition.Transition
 import com.google.firebase.auth.FirebaseAuth
 import com.red.code005.R
 import com.red.code005.databinding.FragmentHomeBinding
-import com.red.code005.navigateTo
+import com.red.code005.utils.navigateTo
 import com.red.code005.ui.home.camera.CameraFragment
 import com.red.code005.ui.home.relations.RelationsFragment
 import com.red.code005.ui.home.widgets.WidgetsFragment

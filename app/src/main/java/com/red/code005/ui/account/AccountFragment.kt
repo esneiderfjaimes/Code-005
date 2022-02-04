@@ -6,12 +6,12 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
-import com.red.code005.ui.common.Event
 import com.red.code005.databinding.FragmentAccountBinding
-import com.red.code005.navigateTo
-import com.red.code005.toast
 import com.red.code005.ui.account.AccountViewModel.AccountNavigation
 import com.red.code005.ui.account.AccountViewModel.AccountNavigation.ShowError
+import com.red.code005.ui.common.Event
+import com.red.code005.utils.navigateTo
+import com.red.code005.utils.toast
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint

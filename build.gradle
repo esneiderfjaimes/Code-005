@@ -10,6 +10,8 @@ ext{
     hiltVersion = '2.40.5'
     // Other dependencies
     glideVersion = '4.12.0'
+    rxAndroidVersion = '2.1.1'
+    rxJavaVersion = '2.2.19'
 
     // endregion
     // region Libs Android X
@@ -20,6 +22,13 @@ ext{
     // endregion
     // region Google Libs
 
+    // > Play Services
+    playServicesAuthLib = 'com.google.android.gms:play-services-auth:20.0.1'
+    // > Firebase
+    firebaseBomLib = 'com.google.firebase:firebase-bom:29.0.0'
+    firebaseAnalytics = 'com.google.firebase:firebase-analytics-ktx'
+    firebaseAuth = 'com.google.firebase:firebase-auth-ktx'
+    firebaseFirestore = 'com.google.firebase:firebase-firestore-ktx'
     // > Dagger Hilt
     daggerLib = "com.google.dagger:hilt-android:$hiltVersion"
     daggerCompilerLib = "com.google.dagger:hilt-android-compiler:$hiltVersion"

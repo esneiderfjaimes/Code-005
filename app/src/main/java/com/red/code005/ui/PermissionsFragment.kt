@@ -8,7 +8,7 @@ import android.util.Log
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
-import com.red.code005.navigateTo
+import com.red.code005.utils.navigateTo
 
 private val PERMISSIONS_REQUIRED = arrayOf(
     Manifest.permission.CAMERA,

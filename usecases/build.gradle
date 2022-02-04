@@ -3,6 +3,7 @@ plugins {
     id 'org.jetbrains.kotlin.android'
     id 'kotlin-kapt'
     id 'dagger.hilt.android.plugin'
+    id 'com.google.gms.google-services'
 }
 
 dependencies {
@@ -14,6 +15,13 @@ dependencies {
     // Dagger
     implementation daggerLib
     kapt daggerCompilerLib
+    // Play Services
+    implementation playServicesAuthLib
+    // Firebase
+    implementation platform(firebaseBomLib)
+    implementation firebaseAnalytics
+    implementation firebaseAuth
+    implementation firebaseFirestore
 }
 
 android {
