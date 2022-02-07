@@ -16,4 +16,9 @@
         <item name="shapeAppearance">@style/ShapeAppearance.App.SmallComponent.R25</item>
         <item name="shapeAppearanceSmallComponent">@style/ShapeAppearance.App.SmallComponent.R25</item>
     </style>
+
+    <style name="ShapeAppearance.Corner50" parent="ShapeAppearance.MaterialComponents.MediumComponent">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">50%</item>
+    </style>
 </resources>

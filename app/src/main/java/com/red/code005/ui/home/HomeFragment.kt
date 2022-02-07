@@ -1,34 +1,46 @@
 package com.red.code005.ui.home
 
 import android.content.Context
-import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
-import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.addCallback
 import androidx.core.view.get
+import androidx.core.view.size
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.Observer
 import androidx.navigation.fragment.NavHostFragment
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
-import com.bumptech.glide.Glide
-import com.bumptech.glide.request.target.CustomTarget
-import com.bumptech.glide.request.transition.Transition
+import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.android.material.navigation.NavigationBarView
 import com.google.firebase.auth.FirebaseAuth
 import com.red.code005.R
 import com.red.code005.databinding.FragmentHomeBinding
-import com.red.code005.utils.navigateTo
+import com.red.code005.ui.common.Event
 import com.red.code005.ui.home.camera.CameraFragment
 import com.red.code005.ui.home.relations.RelationsFragment
 import com.red.code005.ui.home.widgets.WidgetsFragment
-
+import com.red.code005.utils.navigateTo
+import com.red.code005.utils.toast
+import dagger.hilt.android.AndroidEntryPoint
 
 private val PAGE_BUTTON_IDS = listOf(R.id.page_relations, R.id.page_camera, R.id.page_widgets)
 
-class HomeFragment : NavHostFragment() {
+@AndroidEntryPoint
+class HomeFragment : NavHostFragment(), NavigationBarView.OnItemSelectedListener {
+
+    // region Fields
+
+    private val viewModel: HomeViewModel by viewModels()
+
+    // endregion
+
+    // region Override Methods & Callbacks
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -48,21 +60,23 @@ class HomeFragment : NavHostFragment() {
             activity?.moveTaskToBack(true)
         }
         binding.apply {
-            Glide.with(requireContext()).asBitmap()
-                .load(FirebaseAuth.getInstance().currentUser?.photoUrl.toString())
-                .circleCrop()
-                .into(object : CustomTarget<Bitmap>() {
-                    override fun onResourceReady(
-                        resource: Bitmap,
-                        transition: Transition<in Bitmap>?
-                    ) {
-                        topBar.menu[0].icon = BitmapDrawable(resources, resource)
+            lifecycleOwner = this@HomeFragment
+            viewModel.events.observe(
+                viewLifecycleOwner,
+                Observer(this@HomeFragment::validateEvents)
+            )
+            viewModel.onUserPhoto(requireContext()) {
+                if (topBar.menu.size > 0)
+                    topBar.menu[0].icon = BitmapDrawable(resources, it)
+                if (navigationRail?.headerView != null)
+                    (navigationRail.headerView as FloatingActionButton).apply {
+                        setImageBitmap(it)
+                        imageTintList = null
+                        setOnClickListener {
+                            navigateTo(HomeFragmentDirections.actionHomeToAccount())
+                        }
                     }
-
-                    override fun onLoadCleared(placeholder: Drawable?) {
-                        // no use
-                    }
-                })
+            }
             topBar.setOnMenuItemClickListener { menu ->
                 when (menu.itemId) {
                     R.id.page_account -> {
@@ -75,14 +89,14 @@ class HomeFragment : NavHostFragment() {
             pager.adapter = PagerAdapter(this@HomeFragment)
             pager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
                 override fun onPageSelected(position: Int) {
-                    bottomNav.selectedItemId = PAGE_BUTTON_IDS[position]
+                    if (bottomNav != null)
+                        bottomNav.selectedItemId = PAGE_BUTTON_IDS[position]
+                    if (navigationRail != null)
+                        navigationRail.selectedItemId = PAGE_BUTTON_IDS[position]
                 }
             })
-            bottomNav.setOnItemSelectedListener { item ->
-                topBar.title = item.title.toString()
-                pager.currentItem = PAGE_BUTTON_IDS.indexOf(item.itemId)
-                true
-            }
+            bottomNav?.setOnItemSelectedListener(this@HomeFragment)
+            navigationRail?.setOnItemSelectedListener(this@HomeFragment)
             return root
         }
     }
@@ -91,6 +105,33 @@ class HomeFragment : NavHostFragment() {
         super.onDestroyView()
         _binding = null
     }
+
+    override fun onNavigationItemSelected(item: MenuItem): Boolean {
+        _binding?.topBar?.title = item.title.toString()
+        _binding?.pager?.currentItem = PAGE_BUTTON_IDS.indexOf(item.itemId)
+        return true
+    }
+
+    // endregion
+
+    // region Private Methods
+
+    private fun validateEvents(event: Event<HomeViewModel.HomeNavigation>?) {
+        event?.getContentIfNotHandled()?.let { navigation ->
+            when (navigation) {
+                is HomeViewModel.HomeNavigation.ShowError -> navigation.run {
+                    this@HomeFragment.toast("Error -> ${error.message}")
+                }
+                HomeViewModel.HomeNavigation.GoSignIn -> {
+                    navigateTo(HomeFragmentDirections.actionHomeToLogin())
+                }
+            }
+        }
+    }
+
+    // endregion
+
+    // region Inner Classes & Interfaces
 
     private inner class PagerAdapter(fa: Fragment) : FragmentStateAdapter(fa) {
         override fun getItemCount(): Int = PAGE_BUTTON_IDS.size
@@ -102,4 +143,7 @@ class HomeFragment : NavHostFragment() {
             }
         }
     }
+
+    // endregion
+
 }
