@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+    </data>
+
+    <RelativeLayout
+        android:id="@+id/parentRelative"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="?attr/colorSurface"
+        tools:context=".ui.profile.ProfileFragment">
+
+        <TextView
+            android:id="@+id/back_text"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@+id/appBarLayout"
+            android:layout_centerInParent="true"
+            android:layout_marginStart="@dimen/margin_back_text"
+            android:layout_marginTop="@dimen/margin_back_text"
+            android:layout_marginEnd="@dimen/margin_back_text"
+            android:layout_marginBottom="@dimen/margin_back_text"
+            android:textAlignment="center"
+            android:textAppearance="@style/TextAppearance.Material3.DisplayLarge"
+            android:textColor="#1AFFFFFF"
+            tools:text="@string/preview_background_text_username" />
+
+        <com.google.android.material.appbar.AppBarLayout
+            android:id="@+id/appBarLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <com.google.android.material.appbar.MaterialToolbar
+                android:id="@+id/topBar"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                app:navigationIcon="@drawable/ic_back"
+                app:titleCentered="true"
+                tools:title="username" />
+        </com.google.android.material.appbar.AppBarLayout>
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/card"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignTop="@+id/l1"
+            android:layout_alignBottom="@+id/l1"
+            android:layout_marginHorizontal="32dp"
+            android:layout_marginTop="55dp"
+            android:layout_marginBottom="-32dp"
+            android:backgroundTint="?attr/colorSurface"
+            app:cardCornerRadius="32dp"
+            app:cardElevation="0dp"
+            app:strokeWidth="0dp" />
+
+        <LinearLayout
+            android:id="@+id/l1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:layout_marginHorizontal="64dp"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/circle">
+
+                <ImageView
+                    android:id="@+id/photo"
+                    android:layout_width="94dp"
+                    android:layout_height="94dp"
+                    android:layout_centerInParent="true"
+                    android:layout_margin="8dp"
+                    android:contentDescription="@string/photo_user"
+                    android:src="@drawable/ic_account" />
+            </RelativeLayout>
+
+            <TextView
+                android:id="@+id/name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:textAppearance="@style/TextAppearance.Material3.TitleLarge"
+                android:textStyle="bold"
+                tools:text="Name" />
+
+            <TextView
+                android:id="@+id/state"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
+                tools:text="dev" />
+
+            <!-- Container Action -->
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="60dp"
+                android:layout_marginTop="16dp">
+
+                <Button
+                    android:id="@+id/btn_connect"
+                    style="@style/Widget.MaterialComponents.Button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:text="@string/connect"
+                    android:visibility="gone" />
+
+                <Button
+                    android:id="@+id/btn_connected_or_share"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:text="@string/connected"
+                    android:textColor="?attr/colorOnSurface"
+                    android:visibility="gone" />
+
+                <com.google.android.material.progressindicator.CircularProgressIndicator
+                    android:id="@+id/progress_loading"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:indeterminate="true" />
+            </RelativeLayout>
+        </LinearLayout>
+
+        <include
+            android:id="@+id/included_common_query"
+            layout="@layout/common_query" />
+    </RelativeLayout>
+</layout>

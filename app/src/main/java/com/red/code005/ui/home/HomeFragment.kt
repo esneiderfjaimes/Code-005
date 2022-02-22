@@ -3,6 +3,7 @@ package com.red.code005.ui.home
 import android.content.Context
 import android.graphics.drawable.BitmapDrawable
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
@@ -18,10 +19,11 @@ import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.navigation.NavigationBarView
-import com.google.firebase.auth.FirebaseAuth
 import com.red.code005.R
 import com.red.code005.databinding.FragmentHomeBinding
-import com.red.code005.ui.common.Event
+import com.red.code005.ui.home.HomeViewModel.HomeEvent
+import com.red.code005.ui.home.HomeViewModel.HomeEvent.GoSignIn
+import com.red.code005.ui.home.HomeViewModel.HomeEvent.ShowError
 import com.red.code005.ui.home.camera.CameraFragment
 import com.red.code005.ui.home.relations.RelationsFragment
 import com.red.code005.ui.home.widgets.WidgetsFragment
@@ -38,18 +40,23 @@ class HomeFragment : NavHostFragment(), NavigationBarView.OnItemSelectedListener
 
     private val viewModel: HomeViewModel by viewModels()
 
+    private var _binding: FragmentHomeBinding? = null
+    private val binding get() = _binding!!
+
     // endregion
 
     // region Override Methods & Callbacks
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        if (FirebaseAuth.getInstance().currentUser == null)
-            navigateTo(HomeFragmentDirections.actionHomeToLogin())
+        Log.i(TAG, "onAttach: $this")
     }
 
-    private var _binding: FragmentHomeBinding? = null
-    private val binding get() = _binding!!
+    override fun onDetach() {
+        super.onDetach()
+        Log.e(TAG, "onDetach: $this")
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -61,9 +68,9 @@ class HomeFragment : NavHostFragment(), NavigationBarView.OnItemSelectedListener
         }
         binding.apply {
             lifecycleOwner = this@HomeFragment
-            viewModel.events.observe(
+            viewModel.event.observe(
                 viewLifecycleOwner,
-                Observer(this@HomeFragment::validateEvents)
+                Observer(this@HomeFragment::observerEvent)
             )
             viewModel.onUserPhoto(requireContext()) {
                 if (topBar.menu.size > 0)
@@ -116,15 +123,10 @@ class HomeFragment : NavHostFragment(), NavigationBarView.OnItemSelectedListener
 
     // region Private Methods
 
-    private fun validateEvents(event: Event<HomeViewModel.HomeNavigation>?) {
-        event?.getContentIfNotHandled()?.let { navigation ->
-            when (navigation) {
-                is HomeViewModel.HomeNavigation.ShowError -> navigation.run {
-                    this@HomeFragment.toast("Error -> ${error.message}")
-                }
-                HomeViewModel.HomeNavigation.GoSignIn -> {
-                    navigateTo(HomeFragmentDirections.actionHomeToLogin())
-                }
+    private fun observerEvent(event: HomeEvent) {
+        when (event) {
+            is ShowError -> toast("Error -> ${event.error.message}")
+            GoSignIn -> {
             }
         }
     }
@@ -146,4 +148,7 @@ class HomeFragment : NavHostFragment(), NavigationBarView.OnItemSelectedListener
 
     // endregion
 
+    companion object {
+        const val TAG = "LOG:Home"
+    }
 }

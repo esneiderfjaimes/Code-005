@@ -3,15 +3,15 @@ ext{
 
     // Android X versions
     kotlinVersion = '1.7.0'
-    livecycleVersion = '2.4.0'
-    navVersion = '2.4.0'
+    livecycleVersion = '2.4.1'
+    navVersion = '2.4.1'
     // Google version
     materialVersion = '1.6.0-alpha02'
-    hiltVersion = '2.40.5'
+    hiltVersion = '2.41'
     // Other dependencies
     glideVersion = '4.12.0'
     rxAndroidVersion = '2.1.1'
-    rxJavaVersion = '2.2.19'
+    rxJavaVersion = '2.2.21'
 
     // endregion
     // region Libs Android X
@@ -23,7 +23,7 @@ ext{
     // region Google Libs
 
     // > Play Services
-    playServicesAuthLib = 'com.google.android.gms:play-services-auth:20.0.1'
+    playServicesAuthLib = 'com.google.android.gms:play-services-auth:20.1.0'
     // > Firebase
     firebaseBomLib = 'com.google.firebase:firebase-bom:29.0.0'
     firebaseAnalytics = 'com.google.firebase:firebase-analytics-ktx'
@@ -32,6 +32,13 @@ ext{
     // > Dagger Hilt
     daggerLib = "com.google.dagger:hilt-android:$hiltVersion"
     daggerCompilerLib = "com.google.dagger:hilt-android-compiler:$hiltVersion"
+
+    // endregion
+    // region Others Libs
+
+    //Rx
+    rxAndroidLib = "io.reactivex.rxjava2:rxandroid:$rxAndroidVersion"
+    rxJavaLib = "io.reactivex.rxjava2:rxjava:$rxJavaVersion"
 
     // endregion
 }
@@ -46,10 +53,10 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:7.1.0'
+        classpath 'com.android.tools.build:gradle:7.1.1'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.6.10"
         // Navigation
-        classpath "androidx.navigation:navigation-safe-args-gradle-plugin:2.5.0-alpha01"
+        classpath "androidx.navigation:navigation-safe-args-gradle-plugin:2.5.0-alpha02"
         // Dagger Hilt
         classpath 'com.google.dagger:hilt-android-gradle-plugin:2.40.5'
         // Google Services plugin

@@ -15,6 +15,9 @@ dependencies {
     // Dagger
     implementation daggerLib
     kapt daggerCompilerLib
+    //RxJava
+    implementation rxAndroidLib
+    implementation rxJavaLib
     // Play Services
     implementation playServicesAuthLib
     // Firebase

@@ -22,6 +22,16 @@ private val PERMISSIONS_REQUIRED = arrayOf(
  */
 class PermissionsFragment : Fragment() {
 
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        Log.i(TAG, "onAttach: $this")
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        Log.e(TAG, "onDestroy: $this")
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -55,6 +65,9 @@ class PermissionsFragment : Fragment() {
     }
 
     companion object {
+
+        const val TAG = "LOG:Permissions"
+
         /**
          * Convenience method used to check if all permissions required by this app are granted
          */

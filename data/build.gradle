@@ -15,8 +15,11 @@ dependencies {
     // Dagger
     implementation daggerLib
     kapt daggerCompilerLib
+    //RxJava
+    implementation rxAndroidLib
+    implementation rxJavaLib
     // Play Services
-    implementation playServicesAuthLib
+    implementation 'com.google.android.gms:play-services-auth:20.1.0'
     // Firebase
     implementation platform(firebaseBomLib)
     implementation firebaseAnalytics

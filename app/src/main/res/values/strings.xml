@@ -1,5 +1,7 @@
 <resources>
     <string name="app_name">Code 005</string>
+    <string name="filter_view_http_profile">View Http Profile</string>
+    <string name="filter_view_profile">View Profile</string>
     <!-- Strings related to login -->
     <string name="prompt_email">Email</string>
     <string name="prompt_password">Password</string>
@@ -17,4 +19,9 @@
     <string name="account">Account</string>
     <string name="back">back</string>
     <string name="photo_user">photo user</string>
+    <string name="profile_not_found">profile not found</string>
+    <string name="connect">connect</string>
+    <string name="connected">connected</string>
+    <string name="share">Share</string>
+    <string name="preview_background_text_username" translatable="false">.@username@username@username@username@username@username@username@username@username@username@username@username@username@username@username@username@username@username@username@username@username@username@username@username@username@username@username@username@username@username@username@username@username@username@username@username@username@username@username@username@username@username@username@username@username@username@username@username@username@username</string>
 </resources>

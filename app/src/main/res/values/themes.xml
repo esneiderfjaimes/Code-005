@@ -1,5 +1,6 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <color name="navigationBarColor">@color/m3_sys_color_light_surface</color>
+    <color name="T5colorSurface">@color/md_theme_light_surface</color>
     <!-- Base application theme. -->
     <style name="Theme.Code005" parent="Theme.Material3.Light.NoActionBar">
         <!-- Status bar. -->
@@ -27,7 +28,7 @@
         <item name="colorOnErrorContainer">@color/md_theme_light_onErrorContainer</item>
         <item name="android:colorBackground">@color/md_theme_light_background</item>
         <item name="colorOnBackground">@color/md_theme_light_onBackground</item>
-        <item name="colorSurface">@color/md_theme_light_surface</item>
+        <item name="colorSurface">@color/T5colorSurface</item>
         <item name="colorOnSurface">@color/md_theme_light_onSurface</item>
         <item name="colorSurfaceVariant">@color/md_theme_light_surfaceVariant</item>
         <item name="colorOnSurfaceVariant">@color/md_theme_light_onSurfaceVariant</item>

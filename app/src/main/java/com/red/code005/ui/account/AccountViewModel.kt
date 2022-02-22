@@ -3,8 +3,7 @@ package com.red.code005.ui.account
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.red.code005.ui.common.Event
-import com.red.code005.ui.account.AccountViewModel.AccountNavigation.SignOut
+import com.red.code005.ui.account.AccountViewModel.AccountEvent.SignOut
 import com.red.usecases.GetUserUseCase
 import com.red.usecases.SignOutUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -18,8 +17,8 @@ class AccountViewModel @Inject constructor(
 
     // region Fields
 
-    private val _events = MutableLiveData<Event<AccountNavigation>>()
-    val events: LiveData<Event<AccountNavigation>> get() = _events
+    private val _event = MutableLiveData<AccountEvent>()
+    val event: LiveData<AccountEvent> get() = _event
 
     val user = getUserUseCase.invoke()
 
@@ -29,16 +28,16 @@ class AccountViewModel @Inject constructor(
 
     fun signOut() {
         signOutUseCase.invoke()
-        _events.value = Event(SignOut)
+        _event.postValue(SignOut)
     }
 
     // endregion
 
     // region Inner Classes & Interfaces
 
-    sealed class AccountNavigation {
-        data class ShowError(val error: Throwable) : AccountNavigation()
-        object SignOut : AccountNavigation()
+    sealed class AccountEvent {
+        data class ShowError(val error: Throwable) : AccountEvent()
+        object SignOut : AccountEvent()
     }
 
     // endregion
