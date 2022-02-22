@@ -8,7 +8,7 @@ import com.red.code005.ui.profile.ProfileViewModel.ProfileEvent.ActionError
 import com.red.code005.ui.profile.ProfileViewModel.ProfileEvent.ShowAction
 import com.red.domain.ProfilePreview
 import com.red.usecases.CurrentProfileUserCase
-import com.red.usecases.GetUserUseCase
+import com.red.usecases.CurrentUserUseCase
 import com.red.usecases.ProfileByUsernameUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.reactivex.disposables.CompositeDisposable
@@ -16,9 +16,9 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ProfileViewModel @Inject constructor(
-    private val currentUser: GetUserUseCase,
+    private val currentUser: CurrentUserUseCase,
     private val currentProfile: CurrentProfileUserCase,
-    private val profileByUsernameUseCase: ProfileByUsernameUseCase,
+    private val profileByUsername: ProfileByUsernameUseCase,
 ) : ViewModel() {
 
     // region Fields
@@ -42,7 +42,7 @@ class ProfileViewModel @Inject constructor(
     // region Public Methods
 
     fun consultProfile(username: String) {
-        profileByUsernameUseCase.invoke(username).subscribe(
+        profileByUsername.invoke(username).subscribe(
             { profile ->
                 _event.postValue(ProfileEvent.ShowProfile(profile))
             }, { exception ->

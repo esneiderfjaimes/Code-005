@@ -1,18 +1,18 @@
 package com.red.data
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
-import com.google.android.gms.tasks.Task
-import com.google.firebase.auth.AuthResult
+import androidx.activity.result.ActivityResult
 import com.red.domain.ProfilePreview
 import com.red.domain.RootProfile
 import com.red.domain.User
 import io.reactivex.Maybe
 
 interface AuthDataSource {
-    fun getCurrentUser(): User?
+    fun currentUser(): User?
     fun authWithGoogleIntent(context: Context): Intent
-    fun authWithGoogle(idToken: String): Task<AuthResult>
+    fun authWithGoogle(activity: Activity, activityResult: ActivityResult?): Maybe<User>
     fun signOut()
 }
 

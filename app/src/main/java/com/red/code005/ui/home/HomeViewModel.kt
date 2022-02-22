@@ -6,15 +6,15 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.red.code005.utils.loadBitmapFromUrl
-import com.red.usecases.GetUserUseCase
+import com.red.usecases.CurrentUserUseCase
 import com.red.usecases.IsLoginUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    isLoginUseCase: IsLoginUseCase,
-    private val getUserUseCase: GetUserUseCase,
+    isLogin: IsLoginUseCase,
+    private val currentUser: CurrentUserUseCase,
 ) : ViewModel() {
 
     // region Fields
@@ -27,7 +27,7 @@ class HomeViewModel @Inject constructor(
     // region Override Methods & Callbacks
 
     init {
-        if (!isLoginUseCase.invoke()) _event.postValue(HomeEvent.GoSignIn)
+        if (!isLogin.invoke()) _event.postValue(HomeEvent.GoSignIn)
     }
 
     // endregion
@@ -35,7 +35,7 @@ class HomeViewModel @Inject constructor(
     // region Public Methods
 
     fun onUserPhoto(context: Context, onResourceReady: (Bitmap) -> Unit) {
-        loadBitmapFromUrl(context, getUserUseCase.invoke()?.photoUrl.toString(), onResourceReady)
+        loadBitmapFromUrl(context, currentUser.invoke()?.photoUrl.toString(), onResourceReady)
     }
 
     // endregion

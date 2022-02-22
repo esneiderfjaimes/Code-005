@@ -4,15 +4,15 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.red.code005.ui.account.AccountViewModel.AccountEvent.SignOut
-import com.red.usecases.GetUserUseCase
+import com.red.usecases.CurrentUserUseCase
 import com.red.usecases.SignOutUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
 @HiltViewModel
 class AccountViewModel @Inject constructor(
-    getUserUseCase: GetUserUseCase,
-    private val signOutUseCase: SignOutUseCase
+    currentUser: CurrentUserUseCase,
+    private val signOut: SignOutUseCase
 ) : ViewModel() {
 
     // region Fields
@@ -20,14 +20,14 @@ class AccountViewModel @Inject constructor(
     private val _event = MutableLiveData<AccountEvent>()
     val event: LiveData<AccountEvent> get() = _event
 
-    val user = getUserUseCase.invoke()
+    val user = currentUser.invoke()
 
     // endregion
 
     // region Public Methods
 
     fun signOut() {
-        signOutUseCase.invoke()
+        signOut.invoke()
         _event.postValue(SignOut)
     }
 

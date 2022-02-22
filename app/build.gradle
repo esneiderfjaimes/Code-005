@@ -74,13 +74,6 @@ dependencies {
     implementation "com.google.android.material:material:$rootProject.ext.materialVersion"
     // > Gson
     implementation 'com.google.code.gson:gson:2.9.0'
-    // Play Services
-    implementation playServicesAuthLib
-    // Firebase
-    implementation platform(firebaseBomLib)
-    implementation firebaseAnalytics
-    implementation firebaseAuth
-    implementation firebaseFirestore
     // Dagger
     implementation daggerLib
     kapt daggerCompilerLib

@@ -1,16 +1,18 @@
 package com.red.usecases
 
+import android.app.Activity
 import android.content.Context
+import androidx.activity.result.ActivityResult
 import com.red.data.AuthRepository
 import com.red.domain.User
 import javax.inject.Inject
 
-class GetUserUseCase @Inject constructor(private val repository: AuthRepository) {
-    fun invoke(): User? = repository.getCurrentUser()
+class CurrentUserUseCase @Inject constructor(private val repository: AuthRepository) {
+    fun invoke(): User? = repository.currentUser()
 }
 
 class IsLoginUseCase @Inject constructor(private val repository: AuthRepository) {
-    fun invoke(): Boolean = repository.getCurrentUser() != null
+    fun invoke(): Boolean = repository.currentUser() != null
 }
 
 class AuthGoogleIntentUseCase @Inject constructor(private val repository: AuthRepository) {
@@ -18,7 +20,7 @@ class AuthGoogleIntentUseCase @Inject constructor(private val repository: AuthRe
 }
 
 class AuthGoogleUseCase @Inject constructor(private val repository: AuthRepository) {
-    fun invoke(idToken: String) = repository.authWithGoogle(idToken)
+    fun invoke(activity: Activity, result: ActivityResult?) = repository.authWithGoogle(activity, result)
 }
 
 class SignOutUseCase @Inject constructor(private val repository: AuthRepository) {
