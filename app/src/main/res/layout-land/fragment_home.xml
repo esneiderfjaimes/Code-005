@@ -3,7 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <RelativeLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/parent"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/navigationBarColor"
@@ -11,35 +12,25 @@
 
         <com.google.android.material.navigationrail.NavigationRailView
             android:id="@+id/navigation_rail"
-            android:layout_width="wrap_content"
+            android:layout_width="80dp"
             android:layout_height="match_parent"
             android:layout_alignParentEnd="true"
             app:headerLayout="@layout/navigation_rail_fab"
             app:labelVisibilityMode="unlabeled"
+            app:layout_constraintStart_toStartOf="parent"
             app:menu="@menu/bottom_nav"
-            app:menuGravity="center" />
+            app:menuGravity="bottom" />
 
-        <com.google.android.material.appbar.AppBarLayout
-            android:id="@+id/appBarLayout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_toStartOf="@+id/navigation_rail">
-
-            <com.google.android.material.appbar.MaterialToolbar
-                android:id="@+id/topBar"
-                android:layout_width="match_parent"
-                android:layout_height="?attr/actionBarSize"
-                app:title="page title"
-                app:titleCentered="true" />
-        </com.google.android.material.appbar.AppBarLayout>
 
         <com.google.android.material.card.MaterialCardView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_below="@id/appBarLayout"
-            android:layout_margin="0dp"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
             android:layout_toStartOf="@+id/navigation_rail"
             app:cardElevation="0dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/navigation_rail"
+            app:layout_constraintTop_toTopOf="parent"
             app:strokeColor="@android:color/transparent"
             app:strokeWidth="0dp">
 
@@ -48,5 +39,15 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent" />
         </com.google.android.material.card.MaterialCardView>
-    </RelativeLayout>
+
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/topBar"
+            android:layout_width="0dp"
+            android:layout_height="?attr/actionBarSize"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/navigation_rail"
+            app:layout_constraintTop_toTopOf="parent"
+            app:title="page title"
+            app:titleCentered="true" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

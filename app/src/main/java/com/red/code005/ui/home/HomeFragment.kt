@@ -1,19 +1,16 @@
 package com.red.code005.ui.home
 
+import android.animation.ValueAnimator
 import android.content.Context
 import android.graphics.drawable.BitmapDrawable
 import android.os.Bundle
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.MenuItem
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import androidx.activity.addCallback
 import androidx.core.view.get
 import androidx.core.view.size
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Observer
 import androidx.navigation.fragment.NavHostFragment
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
@@ -21,17 +18,15 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.navigation.NavigationBarView
 import com.red.code005.R
 import com.red.code005.databinding.FragmentHomeBinding
-import com.red.code005.ui.home.HomeViewModel.HomeEvent
-import com.red.code005.ui.home.HomeViewModel.HomeEvent.GoSignIn
-import com.red.code005.ui.home.HomeViewModel.HomeEvent.ShowError
-import com.red.code005.ui.home.camera.CameraFragment
-import com.red.code005.ui.home.relations.RelationsFragment
-import com.red.code005.ui.home.widgets.WidgetsFragment
+import com.red.code005.ui.relations.ConnectionsFragment
+import com.red.code005.ui.widgets.WidgetsFragment
+import com.red.code005.utils.extensions.animShape
+import com.red.code005.utils.extensions.inRailFAB
+import com.red.code005.utils.extensions.startAnimationDrawable
 import com.red.code005.utils.navigateTo
-import com.red.code005.utils.toast
 import dagger.hilt.android.AndroidEntryPoint
 
-private val PAGE_BUTTON_IDS = listOf(R.id.page_relations, R.id.page_camera, R.id.page_widgets)
+private val PAGE_BUTTON_IDS = listOf(R.id.page_connections, R.id.page_widgets)
 
 @AndroidEntryPoint
 class HomeFragment : NavHostFragment(), NavigationBarView.OnItemSelectedListener {
@@ -42,6 +37,27 @@ class HomeFragment : NavHostFragment(), NavigationBarView.OnItemSelectedListener
 
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
+
+    private lateinit var fabAction: FloatingActionButton
+    private lateinit var animShapeFab: ValueAnimator
+    private var noAnim = true
+
+    private var pagerCallbacks = object : ViewPager2.OnPageChangeCallback() {
+        override fun onPageSelected(position: Int) {
+            if (!noAnim) {
+                fabAction.startAnimationDrawable(
+                    if (position == 0) R.drawable.avd_add_to_camera
+                    else R.drawable.avd_camera_to_add
+                )
+                if (position == 0) animShapeFab.reverse() else animShapeFab.start()
+            } else noAnim = false
+
+            binding.apply {
+                bottomNav?.apply { selectedItemId = PAGE_BUTTON_IDS[position] } // Portrait
+                navigationRail?.apply { selectedItemId = PAGE_BUTTON_IDS[position] } // Landscape
+            }
+        }
+    }
 
     // endregion
 
@@ -60,50 +76,50 @@ class HomeFragment : NavHostFragment(), NavigationBarView.OnItemSelectedListener
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View {
-        _binding = FragmentHomeBinding.inflate(inflater, container, false)
+        noAnim = true // don't animate when fragment is created and returning from another fragment
         requireActivity().onBackPressedDispatcher.addCallback(this) {
             activity?.moveTaskToBack(true)
         }
+        _binding = FragmentHomeBinding.inflate(inflater, container, false)
         binding.apply {
-            lifecycleOwner = this@HomeFragment
-            viewModel.event.observe(
-                viewLifecycleOwner,
-                Observer(this@HomeFragment::observerEvent)
-            )
-            viewModel.onUserPhoto(requireContext()) {
-                if (topBar.menu.size > 0)
-                    topBar.menu[0].icon = BitmapDrawable(resources, it)
-                if (navigationRail?.headerView != null)
-                    (navigationRail.headerView as FloatingActionButton).apply {
-                        setImageBitmap(it)
-                        imageTintList = null
-                        setOnClickListener {
-                            navigateTo(HomeFragmentDirections.actionHomeToAccount())
-                        }
-                    }
+            topBar.setOnMenuItemClickListener { menu ->  // Portrait Account
+                if (menu.itemId == R.id.page_account) {
+                    navigateTo(HomeFragmentDirections.actionHomeToAccount())
+                    true
+                } else false
             }
-            topBar.setOnMenuItemClickListener { menu ->
-                when (menu.itemId) {
-                    R.id.page_account -> {
-                        navigateTo(HomeFragmentDirections.actionHomeToAccount())
-                        true
-                    }
-                    else -> false
+            navigationRail?.headerView?.inRailFAB()?.fabAccount?.apply { // Landscape Account
+                setOnClickListener { navigateTo(HomeFragmentDirections.actionHomeToAccount()) }
+            }
+
+            viewModel.onUserPhoto(requireContext()) { bitmap ->
+                if (topBar.menu.size > 0) // Portrait Account Bitmap
+                    topBar.menu[0].icon = BitmapDrawable(resources, bitmap)
+                navigationRail?.headerView?.inRailFAB()?.fabAccount?.apply { // Landscape Bitmap
+                    setImageBitmap(bitmap)
+                    imageTintList = null
                 }
             }
+
+            fabAction?.let { this@HomeFragment.fabAction = it } // Portrait Action
+            navigationRail?.headerView?.inRailFAB {
+                this@HomeFragment.fabAction = fabAction  // Landscape Action
+            }
+            this@HomeFragment.fabAction.setOnClickListener {
+                if (pager.currentItem == 0) {
+                    navigateTo(HomeFragmentDirections.actionHomeToCamera())
+                }
+            }
+            animShapeFab = this@HomeFragment.fabAction.animShape(0.5f, 0.3f)
+
+            bottomNav?.setOnItemSelectedListener(this@HomeFragment) // Portrait Nav
+            navigationRail?.setOnItemSelectedListener(this@HomeFragment) // Landscape Nav
+
             pager.adapter = PagerAdapter(this@HomeFragment)
-            pager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
-                override fun onPageSelected(position: Int) {
-                    if (bottomNav != null)
-                        bottomNav.selectedItemId = PAGE_BUTTON_IDS[position]
-                    if (navigationRail != null)
-                        navigationRail.selectedItemId = PAGE_BUTTON_IDS[position]
-                }
-            })
-            bottomNav?.setOnItemSelectedListener(this@HomeFragment)
-            navigationRail?.setOnItemSelectedListener(this@HomeFragment)
+            pager.registerOnPageChangeCallback(pagerCallbacks)
+
             return root
         }
     }
@@ -114,21 +130,9 @@ class HomeFragment : NavHostFragment(), NavigationBarView.OnItemSelectedListener
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
-        _binding?.topBar?.title = item.title.toString()
-        _binding?.pager?.currentItem = PAGE_BUTTON_IDS.indexOf(item.itemId)
+        binding.topBar.title = item.title.toString()
+        binding.pager.currentItem = PAGE_BUTTON_IDS.indexOf(item.itemId)
         return true
-    }
-
-    // endregion
-
-    // region Private Methods
-
-    private fun observerEvent(event: HomeEvent) {
-        when (event) {
-            is ShowError -> toast("Error -> ${event.error.message}")
-            GoSignIn -> {
-            }
-        }
     }
 
     // endregion
@@ -139,8 +143,7 @@ class HomeFragment : NavHostFragment(), NavigationBarView.OnItemSelectedListener
         override fun getItemCount(): Int = PAGE_BUTTON_IDS.size
         override fun createFragment(position: Int): Fragment {
             return when (position) {
-                0 -> RelationsFragment()
-                1 -> CameraFragment()
+                0 -> ConnectionsFragment()
                 else -> WidgetsFragment()
             }
         }

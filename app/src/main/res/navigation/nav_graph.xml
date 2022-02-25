@@ -43,6 +43,14 @@
             app:exitAnim="@anim/fade_out"
             app:popEnterAnim="@anim/fade_in"
             app:popExitAnim="@anim/slide_out" />
+
+        <action
+            android:id="@+id/action_home_to_camera"
+            app:destination="@id/camera_fragment"
+            app:enterAnim="@anim/bottom_enter_anim"
+            app:exitAnim="@anim/bottom_exit_anim"
+            app:popEnterAnim="@anim/bottom_pop_enter_anim"
+            app:popExitAnim="@anim/bottom_pop_exit_anim"/>
     </fragment>
 
     <fragment
@@ -71,4 +79,13 @@
         <deepLink app:uri="www.code005.com/{username}" />
     </fragment>
 
+    <fragment
+        android:id="@+id/camera_fragment"
+        android:name="com.red.code005.ui.camera.CameraFragment"
+        android:label="CameraFragment"
+        tools:layout="@layout/fragment_camera" >
+        <action
+            android:id="@+id/camera_to_permissions"
+            app:destination="@id/permissions_fragment" />
+    </fragment>
 </navigation>

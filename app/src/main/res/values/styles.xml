@@ -21,4 +21,18 @@
         <item name="cornerFamily">rounded</item>
         <item name="cornerSize">50%</item>
     </style>
+
+    <style name="ShapeAppearance.Camera" parent="ShapeAppearance.MaterialComponents.MediumComponent">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">20%</item>
+    </style>
+
+    <style name="FAB">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="fabCustomSize">64dp</item>
+        <item name="iconSize">32dp</item>
+        <item name="maxImageSize">40dp</item>
+        <item name="shapeAppearanceOverlay">@style/ShapeAppearance.Corner50</item>
+    </style>
 </resources>

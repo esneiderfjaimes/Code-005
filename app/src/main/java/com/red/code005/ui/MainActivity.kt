@@ -1,5 +1,6 @@
 package com.red.code005.ui
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -8,6 +9,11 @@ import androidx.navigation.findNavController
 import com.red.code005.R
 import com.red.code005.databinding.ActivityMainBinding
 import dagger.hilt.android.AndroidEntryPoint
+import java.io.File
+
+const val KEY_EVENT_ACTION = "key_event_action"
+const val KEY_EVENT_EXTRA = "key_event_extra"
+private const val IMMERSIVE_FLAG_TIMEOUT = 500L
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
@@ -35,5 +41,14 @@ class MainActivity : AppCompatActivity() {
 
     companion object {
         const val TAG = "LOG:Main"
+
+        /** Use external media if it is available, our app's file directory otherwise */
+        fun getOutputDirectory(context: Context): File {
+            val appContext = context.applicationContext
+            val mediaDir = context.externalMediaDirs.firstOrNull()?.let {
+                File(it, appContext.resources.getString(R.string.app_name)).apply { mkdirs() } }
+            return if (mediaDir != null && mediaDir.exists())
+                mediaDir else appContext.filesDir
+        }
     }
 }

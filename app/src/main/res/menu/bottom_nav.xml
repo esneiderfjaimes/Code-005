@@ -1,22 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
     <item
-        android:id="@+id/page_relations"
+        android:id="@+id/page_connections"
         android:enabled="true"
+        android:icon="@drawable/selector_connections"
+        android:title="@string/connections"
         app:showAsAction="ifRoom"
-        android:icon="@drawable/ic_relations"
-        android:title="@string/relations" />
-    <item
-        android:id="@+id/page_camera"
-        android:enabled="true"
-        app:showAsAction="ifRoom"
-        android:icon="@drawable/ic_camera_outlined"
-        android:title="@string/camera" />
+        tools:icon="@drawable/ic_round_favorite_24" />
     <item
         android:id="@+id/page_widgets"
-        app:showAsAction="ifRoom"
         android:enabled="true"
-        android:icon="@drawable/ic_widgets"
-        android:title="@string/widgets" />
+        android:icon="@drawable/selector_widgets"
+        android:title="@string/widgets"
+        app:showAsAction="ifRoom"
+        tools:icon="@drawable/ic_outline_widgets_24" />
 </menu>
