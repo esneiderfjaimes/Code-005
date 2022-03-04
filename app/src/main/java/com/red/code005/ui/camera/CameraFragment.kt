@@ -7,9 +7,6 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.content.pm.ActivityInfo
 import android.content.res.Configuration
-import android.content.res.Resources
-import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
 import android.hardware.display.DisplayManager
 import android.media.MediaScannerConnection
 import android.net.Uri
@@ -23,22 +20,24 @@ import androidx.camera.core.ImageCapture.Metadata
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.content.ContextCompat
 import androidx.core.net.toFile
-import androidx.core.view.setPadding
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsControllerCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
-import com.bumptech.glide.Glide
-import com.bumptech.glide.request.RequestOptions
 import com.red.code005.R
+import com.red.code005.R.drawable.avd_capture_to_loading
+import com.red.code005.databinding.CameraPreviewBinding
 import com.red.code005.databinding.CameraUiContainerBinding
 import com.red.code005.databinding.FragmentCameraBinding
 import com.red.code005.ui.KEY_EVENT_ACTION
 import com.red.code005.ui.KEY_EVENT_EXTRA
 import com.red.code005.ui.MainActivity
 import com.red.code005.ui.PermissionsFragment
-import com.red.code005.utils.ANIMATION_FAST_MILLIS
-import com.red.code005.utils.ANIMATION_SLOW_MILLIS
+import com.red.code005.utils.animations.drawableAnim
+import com.red.code005.utils.loadDrawable
 import com.red.code005.utils.navigateTo
 import com.red.code005.utils.simulateClick
 import kotlinx.coroutines.Dispatchers
@@ -49,9 +48,6 @@ import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
-import kotlin.math.abs
-import kotlin.math.max
-import kotlin.math.min
 
 /** Helper type alias used for analysis use case callbacks */
 typealias LumaListener = (luma: Double) -> Unit
@@ -71,12 +67,13 @@ class CameraFragment : Fragment() {
     private val viewModel: CameraViewModel by viewModels()
 
     private var _binding: FragmentCameraBinding? = null
-    private val binding get() = _binding!!
+    internal val binding get() = _binding!!
 
     private var cameraUiContainerBinding: CameraUiContainerBinding? = null
+    internal var cameraPreviewBinding: CameraPreviewBinding? = null
 
     private lateinit var outputDirectory: File
-
+    private var photoFile: File? = null
 
     private lateinit var broadcastManager: LocalBroadcastManager
 
@@ -87,8 +84,6 @@ class CameraFragment : Fragment() {
     private var imageAnalyzer: ImageAnalysis? = null
     private var camera: Camera? = null
     private var cameraProvider: ProcessCameraProvider? = null
-    private lateinit var windowManager: WindowManager
-
 
     private val displayManager by lazy {
         requireContext().getSystemService(Context.DISPLAY_SERVICE) as DisplayManager
@@ -142,6 +137,7 @@ class CameraFragment : Fragment() {
     @SuppressLint("MissingPermission")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        hideSystemUI()
 
         // Initialize our background executor
         cameraExecutor = Executors.newSingleThreadExecutor()
@@ -155,10 +151,6 @@ class CameraFragment : Fragment() {
         // Every time the orientation of device changes, update rotation for use cases
         displayManager.registerDisplayListener(displayListener, null)
 
-        //Initialize WindowManager to retrieve display metrics
-        // TODO LEGACY
-        // windowManager = androidx.window.WindowManager(view.context)
-
         // Determine the output directory
         outputDirectory = MainActivity.getOutputDirectory(requireContext())
 
@@ -168,11 +160,14 @@ class CameraFragment : Fragment() {
             // Keep track of the display in which this view is attached
             displayId = binding.viewFinder.display.displayId
 
-            // Build UI controls
-            updateCameraUi()
-
-            // Set up the camera and its use cases
-            setUpCamera()
+            try {
+                // Build UI controls
+                updateCameraUi()
+                // Set up the camera and its use cases
+                setUpCamera()
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
         }
     }
 
@@ -196,7 +191,7 @@ class CameraFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
-        activity?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
+        activity?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_NOSENSOR
         // Make sure that all permissions are still present, since the
         // user could have removed them while the app was in paused state.
         if (!PermissionsFragment.hasPermissions(requireContext())) {
@@ -207,6 +202,11 @@ class CameraFragment : Fragment() {
     override fun onPause() {
         super.onPause()
         activity?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_FULL_SENSOR
+    }
+
+    override fun onStop() {
+        super.onStop()
+        showSystemUI()
     }
 
     override fun onDestroyView() {
@@ -225,19 +225,39 @@ class CameraFragment : Fragment() {
 
     // region Private Methods
 
-    private fun setGalleryThumbnail(uri: Uri) {
-        // Run the operations in the view's thread
-        cameraUiContainerBinding?.photoViewButton?.let { photoViewButton ->
-            photoViewButton.post {
-                // Remove thumbnail padding
-                photoViewButton.setPadding(resources.getDimension(R.dimen.stroke_small).toInt())
+    private fun hideSystemUI() {
+        WindowCompat.setDecorFitsSystemWindows(requireActivity().window, false)
+        WindowInsetsControllerCompat(requireActivity().window, requireView()).let { controller ->
+            controller.hide(WindowInsetsCompat.Type.systemBars())
+            controller.systemBarsBehavior =
+                WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+        }
+    }
 
-                // Load thumbnail into circular button using Glide
-                Glide.with(photoViewButton)
-                    .load(uri)
-                    .apply(RequestOptions.circleCropTransform())
-                    .into(photoViewButton)
+    private fun showSystemUI() {
+        WindowCompat.setDecorFitsSystemWindows(requireActivity().window, true)
+        WindowInsetsControllerCompat(requireActivity().window, requireView())
+            .show(WindowInsetsCompat.Type.systemBars())
+    }
+
+    private fun showPreview(uri: Uri) {
+        // Load preview using Glide
+        uri.loadDrawable(requireContext(), onReady = {
+            requireActivity().runOnUiThread {
+                // Remove previous UI if any
+                bindPreview(it)
             }
+        }, onError = {
+            inProcess = false
+            reloadCameraControls()
+        })
+    }
+
+    var inProcess = false
+
+    fun reloadCameraControls() {
+        requireActivity().runOnUiThread {
+            cameraUiContainerBinding?.cameraCaptureButton?.setImageResource(R.drawable.selector_capture)
         }
     }
 
@@ -266,15 +286,11 @@ class CameraFragment : Fragment() {
 
     /** Declare and bind preview, capture and analysis use cases */
     private fun bindCameraUseCases() {
-        // Get screen metrics used to setup camera for full screen resolution
-        val metrics = Resources.getSystem().displayMetrics
-
-        Log.d(TAG, "Screen metrics: ${metrics.widthPixels} x ${metrics.heightPixels}")
-
-        val screenAspectRatio = aspectRatio(metrics.widthPixels, metrics.heightPixels)
-        Log.d(TAG, "Preview aspect ratio: $screenAspectRatio")
-
-        val rotation = binding.viewFinder.display.rotation
+        // 1:1 aspect ratio is required but since it is not supported 4:3 is used
+        // TODO: find possible solutions for 1:1 aspect ratio
+        // Rotation will stay fixed to avoid UI bugs
+        val aspectRatio = AspectRatio.RATIO_4_3
+        val rotation = Surface.ROTATION_0
 
         // CameraProvider
         val cameraProvider = cameraProvider
@@ -286,7 +302,7 @@ class CameraFragment : Fragment() {
         // Preview
         preview = Preview.Builder()
             // We request aspect ratio but no resolution
-            .setTargetAspectRatio(screenAspectRatio)
+            .setTargetAspectRatio(aspectRatio)
             // Set initial target rotation
             .setTargetRotation(rotation)
             .build()
@@ -296,7 +312,7 @@ class CameraFragment : Fragment() {
             .setCaptureMode(ImageCapture.CAPTURE_MODE_MINIMIZE_LATENCY)
             // We request aspect ratio but no resolution to match preview config, but letting
             // CameraX optimize for whatever specific resolution best fits our use cases
-            .setTargetAspectRatio(screenAspectRatio)
+            .setTargetAspectRatio(aspectRatio)
             // Set initial target rotation, we will have to call this again if rotation changes
             // during the lifecycle of this use case
             .setTargetRotation(rotation)
@@ -305,7 +321,7 @@ class CameraFragment : Fragment() {
         // ImageAnalysis
         imageAnalyzer = ImageAnalysis.Builder()
             // We request aspect ratio but no resolution
-            .setTargetAspectRatio(screenAspectRatio)
+            .setTargetAspectRatio(aspectRatio)
             // Set initial target rotation, we will have to call this again if rotation changes
             // during the lifecycle of this use case
             .setTargetRotation(rotation)
@@ -327,7 +343,8 @@ class CameraFragment : Fragment() {
             // A variable number of use-cases can be passed here -
             // camera provides access to CameraControl & CameraInfo
             camera = cameraProvider.bindToLifecycle(
-                this, cameraSelector, preview, imageCapture, imageAnalyzer)
+                this, cameraSelector, preview, imageCapture, /*imageAnalyzer*/
+            )
 
             // Attach the viewfinder's surface provider to preview use case
             preview?.setSurfaceProvider(binding.viewFinder.surfaceProvider)
@@ -428,25 +445,6 @@ class CameraFragment : Fragment() {
         }
     }
 
-    /**
-     *  [androidx.camera.core.ImageAnalysis.Builder] requires enum value of
-     *  [androidx.camera.core.AspectRatio]. Currently it has values of 4:3 & 16:9.
-     *
-     *  Detecting the most suitable ratio for dimensions provided in @params by counting absolute
-     *  of preview ratio to one of the provided values.
-     *
-     *  @param width - preview width
-     *  @param height - preview height
-     *  @return suitable aspect ratio
-     */
-    private fun aspectRatio(width: Int, height: Int): Int {
-        val previewRatio = max(width, height).toDouble() / min(width, height)
-        if (abs(previewRatio - RATIO_4_3_VALUE) <= abs(previewRatio - RATIO_16_9_VALUE)) {
-            return AspectRatio.RATIO_4_3
-        }
-        return AspectRatio.RATIO_16_9
-    }
-
     /** Method used to re-draw the camera UI controls, called every time configuration changes. */
     private fun updateCameraUi() {
 
@@ -462,22 +460,21 @@ class CameraFragment : Fragment() {
         )
 
         // In the background, load latest photo taken (if any) for gallery thumbnail
-        lifecycleScope.launch(Dispatchers.IO) {
-            outputDirectory.listFiles { file ->
-                EXTENSION_WHITELIST.contains(file.extension.uppercase(Locale.ROOT))
-            }?.maxOrNull()?.let {
-                setGalleryThumbnail(Uri.fromFile(it))
-            }
+        if (inProcess && photoFile != null) lifecycleScope.launch(Dispatchers.IO) {
+            showPreview(Uri.fromFile(photoFile))
         }
 
         // Listener for button used to capture photo
         cameraUiContainerBinding?.cameraCaptureButton?.setOnClickListener {
-
+            if (inProcess) return@setOnClickListener
+            Log.i(TAG, "cameraCaptureButton: setOnClickListener: ")
+            cameraUiContainerBinding?.cameraCaptureButton?.drawableAnim(avd_capture_to_loading)
+            inProcess = true
             // Get a stable reference of the modifiable image capture use case
             imageCapture?.let { imageCapture ->
 
                 // Create output file to hold the image
-                val photoFile = createFile(outputDirectory, FILENAME, PHOTO_EXTENSION)
+                photoFile = createFile(outputDirectory, FILENAME, PHOTO_EXTENSION)
 
                 // Setup image capture metadata
                 val metadata = Metadata().apply {
@@ -487,7 +484,7 @@ class CameraFragment : Fragment() {
                 }
 
                 // Create output options object which contains file + metadata
-                val outputOptions = ImageCapture.OutputFileOptions.Builder(photoFile)
+                val outputOptions = ImageCapture.OutputFileOptions.Builder(photoFile!!)
                     .setMetadata(metadata)
                     .build()
 
@@ -502,8 +499,8 @@ class CameraFragment : Fragment() {
                             val savedUri = output.savedUri ?: Uri.fromFile(photoFile)
                             Log.d(TAG, "Photo capture succeeded: $savedUri")
 
-                            // Update the gallery thumbnail with latest picture taken
-                            setGalleryThumbnail(savedUri)
+                            // Show preview with picture taken
+                            showPreview(savedUri)
 
                             // If the folder selected is an external media directory, this is
                             // unnecessary but otherwise other apps will not be able to access our
@@ -519,13 +516,6 @@ class CameraFragment : Fragment() {
                             }
                         }
                     })
-
-                // Display flash animation to indicate that photo was captured
-                binding.root.postDelayed({
-                    binding.root.foreground = ColorDrawable(Color.WHITE)
-                    binding.root.postDelayed(
-                        { binding.root.foreground = null }, ANIMATION_FAST_MILLIS)
-                }, ANIMATION_SLOW_MILLIS)
             }
         }
 
@@ -547,13 +537,29 @@ class CameraFragment : Fragment() {
             }
         }
 
-        // Listener for button used to view the most recent photo
-        cameraUiContainerBinding?.photoViewButton?.setOnClickListener {
-            // Only navigate when the gallery has photos
-            if (true == outputDirectory.listFiles()?.isNotEmpty()) {
-                // TODO No action
+        cameraUiContainerBinding?.cameraFlashButton?.let {
+            // Listener for the button used to switch between the different flash modes
+            it.setOnClickListener { _ ->
+                imageCapture?.apply {
+                    flashMode = nextFlashMode(flashMode)
+                    it.setImageResource(drawableOfFlashMode(flashMode))
+                }
             }
         }
+    }
+
+    var mStartCaptureTime: Long = 0
+
+    private fun nextFlashMode(flashMode: Int) = when (flashMode) {
+        ImageCapture.FLASH_MODE_OFF -> ImageCapture.FLASH_MODE_ON
+        ImageCapture.FLASH_MODE_ON -> ImageCapture.FLASH_MODE_AUTO
+        else -> ImageCapture.FLASH_MODE_OFF
+    }
+
+    private fun drawableOfFlashMode(flashMode: Int) = when (flashMode) {
+        ImageCapture.FLASH_MODE_ON -> R.drawable.ic_flash_on
+        ImageCapture.FLASH_MODE_AUTO -> R.drawable.ic_flash_auto
+        else -> R.drawable.ic_flash_off
     }
 
     /** Enabled or disabled a button to switch cameras depending on the available cameras */
@@ -674,8 +680,6 @@ class CameraFragment : Fragment() {
         const val TAG = "CameraXBasic"
         private const val FILENAME = "yyyy-MM-dd-HH-mm-ss-SSS"
         private const val PHOTO_EXTENSION = ".jpg"
-        private const val RATIO_4_3_VALUE = 4.0 / 3.0
-        private const val RATIO_16_9_VALUE = 16.0 / 9.0
 
         /** Helper function used to create a timestamped file */
         private fun createFile(baseFolder: File, format: String, extension: String) =

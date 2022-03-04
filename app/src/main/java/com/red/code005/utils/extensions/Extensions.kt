@@ -1,7 +1,6 @@
 package com.red.code005.utils
 
 import android.content.Context
-import android.content.Intent
 import android.graphics.Bitmap
 import android.view.View
 import android.view.animation.AnimationUtils
@@ -12,12 +11,9 @@ import androidx.annotation.StringRes
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavDirections
-import androidx.navigation.NavOptions
 import androidx.navigation.Navigation
 import androidx.palette.graphics.Palette
-import androidx.viewbinding.ViewBinding
 import com.red.code005.R
-import com.red.code005.databinding.NavigationRailFabBinding
 
 fun Fragment.toast(text: String) {
     Toast.makeText(requireContext(), text, Toast.LENGTH_SHORT).show()

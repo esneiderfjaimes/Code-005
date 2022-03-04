@@ -5,7 +5,10 @@ import android.content.Context
 import android.graphics.drawable.BitmapDrawable
 import android.os.Bundle
 import android.util.Log
-import android.view.*
+import android.view.LayoutInflater
+import android.view.MenuItem
+import android.view.View
+import android.view.ViewGroup
 import androidx.activity.addCallback
 import androidx.core.view.get
 import androidx.core.view.size
@@ -17,12 +20,13 @@ import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.navigation.NavigationBarView
 import com.red.code005.R
+import com.red.code005.R.drawable.*
 import com.red.code005.databinding.FragmentHomeBinding
 import com.red.code005.ui.relations.ConnectionsFragment
 import com.red.code005.ui.widgets.WidgetsFragment
-import com.red.code005.utils.extensions.animShape
+import com.red.code005.utils.animations.cornerAnim
+import com.red.code005.utils.animations.drawableAnim
 import com.red.code005.utils.extensions.inRailFAB
-import com.red.code005.utils.extensions.startAnimationDrawable
 import com.red.code005.utils.navigateTo
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -39,18 +43,18 @@ class HomeFragment : NavHostFragment(), NavigationBarView.OnItemSelectedListener
     private val binding get() = _binding!!
 
     private lateinit var fabAction: FloatingActionButton
-    private lateinit var animShapeFab: ValueAnimator
+    private var actionCornerAnim: ValueAnimator? = null
     private var noAnim = true
 
     private var pagerCallbacks = object : ViewPager2.OnPageChangeCallback() {
         override fun onPageSelected(position: Int) {
             if (!noAnim) {
-                fabAction.startAnimationDrawable(
-                    if (position == 0) R.drawable.avd_add_to_camera
-                    else R.drawable.avd_camera_to_add
-                )
-                if (position == 0) animShapeFab.reverse() else animShapeFab.start()
-            } else noAnim = false
+                fabAction.drawableAnim(if (position == 0) avd_add_to_camera else avd_camera_to_add)
+                if (position == 0) actionCornerAnim?.reverse() else actionCornerAnim?.start()
+            } else {
+                noAnim = false
+                fabAction.setImageResource(if (position == 0) ic_camera else ic_add)
+            }
 
             binding.apply {
                 bottomNav?.apply { selectedItemId = PAGE_BUTTON_IDS[position] } // Portrait
@@ -112,7 +116,7 @@ class HomeFragment : NavHostFragment(), NavigationBarView.OnItemSelectedListener
                     navigateTo(HomeFragmentDirections.actionHomeToCamera())
                 }
             }
-            animShapeFab = this@HomeFragment.fabAction.animShape(0.5f, 0.3f)
+            actionCornerAnim = this@HomeFragment.fabAction.cornerAnim(0.3f)
 
             bottomNav?.setOnItemSelectedListener(this@HomeFragment) // Portrait Nav
             navigationRail?.setOnItemSelectedListener(this@HomeFragment) // Landscape Nav

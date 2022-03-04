@@ -57,6 +57,6 @@
             app:layout_constraintBottom_toTopOf="@id/bottom_nav"
             app:layout_constraintEnd_toEndOf="parent"
             app:srcCompat="@drawable/avd_camera_to_add"
-            tools:src="@drawable/ic_round_camera_24" />
+            tools:src="@drawable/ic_camera" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

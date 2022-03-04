@@ -37,5 +37,9 @@
     <string name="delete_button_alt">Delete</string>
     <string name="delete_dialog">Delete current photo?</string>
     <string name="delete_title">Confirm</string>
-    <string name="flip_camera">flip camera</string>
+    <string name="flip_camera">Flip camera</string>
+    <string name="preview_alt">Preview</string>
+    <string name="flash_alt">Flash</string>
+    <string name="save_preview_alt">Save preview</string>
+    <string name="close_preview_alt">Close preview</string>
 </resources>

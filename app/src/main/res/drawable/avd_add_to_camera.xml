@@ -5,15 +5,14 @@
             android:name="vector"
             android:width="24dp"
             android:height="24dp"
-            android:tint="?attr/colorOnSurface"
             android:viewportWidth="20"
             android:viewportHeight="20">
             <group
                 android:name="group_tick_cross"
-                android:translateY="-2"
-                android:translateX="-2"
                 android:pivotX="12"
-                android:pivotY="12">
+                android:pivotY="12"
+                android:translateX="-2"
+                android:translateY="-2">
                 <path
                     android:name="path_top"
                     android:fillColor="@android:color/white"

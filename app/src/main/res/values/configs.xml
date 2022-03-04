@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- Anim action camera to action add widget -->
     <integer name="iconAnimationTime">@android:integer/config_longAnimTime</integer>
     <integer name="durationTransitionFragment">@android:integer/config_shortAnimTime</integer>
+
+    <!-- Anim capture to loading -->
+    <integer name="durationRotationLoading">500</integer>
+    <integer name="durationTransition">250</integer>
 </resources>

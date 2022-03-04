@@ -8,12 +8,12 @@
         android:icon="@drawable/selector_connections"
         android:title="@string/connections"
         app:showAsAction="ifRoom"
-        tools:icon="@drawable/ic_round_favorite_24" />
+        tools:icon="@drawable/ic_favorite_select" />
     <item
         android:id="@+id/page_widgets"
         android:enabled="true"
         android:icon="@drawable/selector_widgets"
         android:title="@string/widgets"
         app:showAsAction="ifRoom"
-        tools:icon="@drawable/ic_outline_widgets_24" />
+        tools:icon="@drawable/ic_widgets" />
 </menu>

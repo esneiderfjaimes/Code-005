@@ -7,7 +7,7 @@
     android:gravity="center"
     android:orientation="vertical">
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton xmlns:android="http://schemas.android.com/apk/res/android"
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab_account"
         style="?attr/floatingActionButtonSurfaceStyle"
         android:layout_width="wrap_content"
@@ -16,19 +16,20 @@
         android:outlineAmbientShadowColor="@android:color/transparent"
         android:outlineSpotShadowColor="@android:color/transparent"
         app:elevation="0dp"
+        app:maxImageSize="32dp"
         app:shapeAppearanceOverlay="@style/ShapeAppearance.Corner50"
         app:srcCompat="@drawable/ic_account" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab_action"
+        style="@style/FAB"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="8dp"
-        style="@style/FAB"
         android:contentDescription="@string/camera"
         app:layout_constraintBottom_toTopOf="@id/bottom_nav"
         app:layout_constraintEnd_toEndOf="parent"
         app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.Material3.FloatingActionButton"
         app:srcCompat="@drawable/avd_camera_to_add"
-        tools:src="@drawable/ic_round_camera_24" />
+        tools:src="@drawable/ic_camera" />
 </LinearLayout>
